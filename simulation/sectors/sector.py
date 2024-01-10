@@ -1,37 +1,7 @@
-from dataclasses import dataclass
-from enum import Enum
+from threading import Lock
 
-
-class SectorType(Enum):
-    DECIDUOUS = 1
-    MIXED = 2
-    CONIFEROUS = 3
-    FIELD = 4
-    FALLOW = 5
-    WATER = 6
-    UNTRACKED = 7
-
-
-class GeographicDirection(Enum):
-    N = 1
-    NE = 2
-    E = 3
-    SE = 4
-    S = 5
-    SW = 6
-    W = 7
-    NW = 8
-
-
-@dataclass
-class SectorState:
-    temperature: float | None
-    wind_speed: float | None
-    wind_direction: GeographicDirection | None
-    air_humidity: int | None  # in percents
-    plant_litter_moisture: int | None  # in percents
-    co2_concentration: float | None  # parts per million
-    pm2_5_concentration: float | None  # micrograms per cubic meter
+from simulation.sectors.sector_state import SectorState
+from simulation.sectors.sector_type import SectorType
 
 
 class Sector:
@@ -43,6 +13,7 @@ class Sector:
         sector_type: SectorType,
         initial_state: SectorState
     ):
+        self.lock = Lock()
         self._sector_id = sector_id
         self._row = row
         self._column = column

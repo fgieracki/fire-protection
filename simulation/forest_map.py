@@ -1,8 +1,8 @@
-from sector import Sector
+from simulation.sectors.sector import Sector
 from typing import TypeAlias
-from simulation.utils import Location
+from simulation.location import Location
 
-ForestMapCornerLocations: TypeAlias = tuple[Location, Location, Location, Location]
+ForestMapCornerLocations: TypeAlias = tuple[Location, Location, Location, Location]  # cw start upper left
 
 
 class ForestMap:
@@ -46,3 +46,28 @@ class ForestMap:
     def sectors(self) -> list[list[Sector]]:
         return self._sectors
 
+    def find_sector(self, location: Location):
+        lat_interpolation = (
+                (location.latitude - self._location[1].latitude)
+                / (self._location[2].latitude - self._location[1].latitude)
+        )
+        lon_interpolation = (
+                (location.longitude - self._location[0].longitude)
+                / (self._location[1].longitude - self._location[0].longitude)
+        )
+
+        height_index = int(self._height * lat_interpolation)
+        width_index = int(self._width * lon_interpolation)
+
+        return self._sectors[height_index][width_index]
+
+    def get_adjacent_sectors(self, sector: Sector) -> list[Sector]:
+        row = sector.row
+        column = sector.column
+        adjacent_sectors = []
+
+        for row_index in range(max(row - 1, 0), min(row + 1, self.height - 1)):
+            for column_index in range(max(column - 1, 0), min(column + 1, self.width - 1)):
+                adjacent_sectors.append(self._sectors[row_index][column_index])
+
+        return adjacent_sectors

@@ -7,4 +7,4 @@ class SensorType(Enum):
     WIND_DIRECTION = 3
     LITTER_MOISTURE = 4
     PM2_5 = 5
-    CO_2 = 6
+    CO2 = 6

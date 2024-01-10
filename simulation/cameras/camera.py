@@ -1,9 +1,9 @@
+import logging
 from datetime import datetime
 
 from simulation.cameras.camera_data import CameraData
 from simulation.forest_map import ForestMap
-from simulation.sector import Sector
-from simulation.utils import Location
+from simulation.location import Location
 from simulation.agent import SteadyAgent
 
 
@@ -28,5 +28,8 @@ class Camera(SteadyAgent):
     def data(self) -> CameraData:
         return self._data
 
-    def next(self, adjacent_sectors: list[Sector]):
+    def next(self):
         pass
+
+    def log(self) -> None:
+        logging.debug(f'Camera {self._camera_id} has data: {self._data}.')
