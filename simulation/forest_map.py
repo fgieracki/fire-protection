@@ -1,6 +1,10 @@
+import json
+
 from simulation.sectors.sector import Sector
 from typing import TypeAlias
 from simulation.location import Location
+from simulation.sectors.sector_state import SectorState
+from simulation.sectors.sector_type import SectorType
 
 ForestMapCornerLocations: TypeAlias = tuple[Location, Location, Location, Location]  # cw start upper left
 
@@ -21,6 +25,45 @@ class ForestMap:
         self._width = width
         self._location = location
         self._sectors = sectors
+
+    @classmethod
+    def from_conf(cls, conf_file: str):
+        with open(conf_file, 'r') as fp:
+            conf = json.load(fp)
+
+        locations = conf["location"]
+        sectors_:list[list[Sector | None]] = [[None for _ in range(conf["width"])] for _ in range(conf["height"])]
+        for val in conf["sectors"]:
+            initial_state = SectorState(
+                temperature=val["initialState"]["temperature"],
+                wind_speed=val["initialState"]["windSpeed"],
+                wind_direction=val["initialState"]["windDirection"],
+                air_humidity=val["initialState"]["airHumidity"],
+                plant_litter_moisture=val["initialState"]["plantLitterMoisture"],
+                co2_concentration=val["initialState"]["co2Concentration"],
+                pm2_5_concentration=val["initialState"]["pm2_5Concentration"],
+            )
+
+            sectors_[val["row"]][val["column"]] = Sector(
+                sector_id=val["sectorId"],
+                row=val["row"],
+                column=val["column"],
+                sector_type=val["sectorType"],
+                initial_state=initial_state,
+            )
+
+        values = {
+            "forest_id": conf["forestId"],
+            "forest_name": conf["forestName"],
+            "height": conf["height"],
+            "width": conf["width"],
+            "location": (
+                Location(**location) for location in locations
+            ),
+            "sectors": sectors_
+        }
+
+        return ForestMap(**values)
 
     @property
     def forest_id(self) -> str:
