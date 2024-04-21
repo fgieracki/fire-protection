@@ -26,6 +26,8 @@ class ForestMap:
         self._location = location
         self._sectors = sectors
 
+
+
     @classmethod
     def from_conf(cls, conf_file: str):
         with open(conf_file, 'r') as fp:
@@ -104,13 +106,22 @@ class ForestMap:
 
         return self._sectors[height_index][width_index]
 
-    def get_adjacent_sectors(self, sector: Sector) -> list[Sector]:
+    def get_adjacent_sectors(self, sector: Sector, old_sectors: list[list[Sector]]) -> list[Sector]:
         row = sector.row
         column = sector.column
         adjacent_sectors = []
 
-        for row_index in range(max(row - 1, 0), min(row + 1, self.height - 1)):
-            for column_index in range(max(column - 1, 0), min(column + 1, self.width - 1)):
-                adjacent_sectors.append(self._sectors[row_index][column_index])
+        if row > 0:
+            adjacent_sectors.append(old_sectors[row - 1][column])
+        if row < self.height - 1:
+            adjacent_sectors.append(old_sectors[row + 1][column])
+        if column > 0:
+            adjacent_sectors.append(old_sectors[row][column - 1])
+        if column < self.width - 1:
+            adjacent_sectors.append(old_sectors[row][column + 1])
+
+        # for row_index in range(max(row - 1, 0), min(row + 1, self.height - 1)):
+        #     for column_index in range(max(column - 1, 0), min(column + 1, self.width - 1)):
+        #         adjacent_sectors.append(self._sectors[row_index][column_index])
 
         return adjacent_sectors

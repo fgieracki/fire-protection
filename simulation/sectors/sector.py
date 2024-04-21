@@ -19,6 +19,8 @@ class Sector:
         self._column = column
         self._sector_type = sector_type
         self._state = initial_state
+        self._extinguish_level = 0 #scale 0-100
+        self._burn_level = 0 #scale 0-100
 
     @property
     def sector_id(self) -> int:
@@ -39,3 +41,15 @@ class Sector:
     @property
     def state(self) -> SectorState:
         return self._state
+
+    @property
+    def extinguish_level(self) -> int:
+        return self._extinguish_level
+
+    @property
+    def burn_level(self) -> int:
+        return self._burn_level
+
+    @burn_level.setter
+    def burn_level(self, burn):
+        self._burn_level = burn
