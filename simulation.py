@@ -39,6 +39,8 @@ def main():
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
                     additional_burn = random.uniform(0.1, 2)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
+                    map.sectors[current_sector.row][current_sector.column].burn_level = max(100, map.sectors[
+                        current_sector.row][current_sector.column].burn_level)
 
                 elif current_sector.burn_level < 100 and current_sector.extinguish_level < 50:
                     neighbors = map.get_adjacent_sectors(current_sector, old_sectors)
@@ -51,8 +53,10 @@ def main():
                     if neighbor_fire:
                         additional_burn = random.uniform(0.1, 2)
                         map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
-        if i % 10 == 0:
-            visualize_fire(map)
+                        map.sectors[current_sector.row][current_sector.column].burn_level = max(100, map.sectors[
+                            current_sector.row][current_sector.column].burn_level)
+        # if i % 10 == 0:
+        visualize_fire(map)
 
         if i == 100:
             map.sectors[1][1].extinguish_level = 100
@@ -82,14 +86,9 @@ def visualize_fire(map: ForestMap):
     plot = cv2.imread('plot.png')
     cv2.imshow('image', plot)
 
-    cv2.waitKey(0)
+    cv2.waitKey(1000)
     cv2.destroyAllWindows()
 
-    # Add colorbar
-
-
-    # Show the plot
-    # plt.show()
 
 
 if __name__ == '__main__':
