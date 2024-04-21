@@ -21,6 +21,7 @@ class Sector:
         self._state = initial_state
         self._extinguish_level = 0 #scale 0-100
         self._burn_level = 0 #scale 0-100
+        self._sensors = []
 
     @property
     def sector_id(self) -> int:
@@ -57,3 +58,14 @@ class Sector:
     @extinguish_level.setter
     def extinguish_level(self, extinguish):
         self._extinguish_level = extinguish
+
+    @property
+    def sensors(self):
+        return self._sensors
+
+    def add_sensor(self, sensor):
+        self._sensors.append(sensor)
+
+    def remove_sensor(self, sensor):
+        self._sensors.remove(sensor)
+

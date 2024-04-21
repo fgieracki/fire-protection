@@ -33,6 +33,9 @@ def main():
         old_sectors = map.sectors
         for row in old_sectors:
             for current_sector in row:
+                if current_sector.sector_type == 6:
+                    continue
+
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
                     additional_burn = random.uniform(0.1, 2)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
@@ -69,7 +72,7 @@ def visualize_fire(map: ForestMap):
 
 
     # Plot the heatmap
-    plt.imshow(fire_sectors, cmap='hot', interpolation='nearest', vmin=-100, vmax=100)
+    plt.imshow(fire_sectors, cmap='bwr', interpolation='nearest', vmin=-100, vmax=100)
 
     # cbar = plt.colorbar()
     # cbar.set_label('Burn Level')

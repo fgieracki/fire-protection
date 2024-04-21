@@ -65,6 +65,29 @@ class ForestMap:
             "sectors": sectors_
         }
 
+        # parse this json to object:
+        # "sensors": [
+        #     {
+        #         "sensorId": 0,
+        #         "sensorType": 1,
+        #         "location": {
+        #             "longitude": 50.5,
+        #             "latitude": 50.5
+        #         },
+        #         "timestamp": "<built-in method now of type object at 0x1025c8980>"
+        #     },
+        #     {
+        #         "sensorId": 3,
+        #         "sensorType": 1,
+        #         "location": {
+        #             "longitude": 50.5,
+        #             "latitude": 51.5
+        #         },
+        #         "timestamp": "<built-in method now of type object at 0x1025c8980>"
+        #     },
+
+
+
         return ForestMap(**values)
 
     @property
