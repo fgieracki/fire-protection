@@ -53,3 +53,7 @@ class Sector:
     @burn_level.setter
     def burn_level(self, burn):
         self._burn_level = burn
+
+    @extinguish_level.setter
+    def extinguish_level(self, extinguish):
+        self._extinguish_level = extinguish

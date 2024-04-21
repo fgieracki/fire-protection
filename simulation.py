@@ -33,7 +33,7 @@ def main():
         old_sectors = map.sectors
         for row in old_sectors:
             for current_sector in row:
-                if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < 50:
+                if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
                     additional_burn = random.uniform(0.1, 2)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
 
@@ -41,7 +41,7 @@ def main():
                     neighbors = map.get_adjacent_sectors(current_sector, old_sectors)
                     neighbor_fire = False
                     for neighbor in neighbors:
-                        if neighbor.burn_level > 20:
+                        if neighbor.burn_level > 20 and neighbor.burn_level > neighbor.extinguish_level:
                             neighbor_fire = True
                             break
 
@@ -51,6 +51,9 @@ def main():
         if i % 10 == 0:
             visualize_fire(map)
 
+        if i == 100:
+            map.sectors[1][1].extinguish_level = 100
+
 
 
 def visualize_fire(map: ForestMap):
@@ -59,31 +62,31 @@ def visualize_fire(map: ForestMap):
 
     for row in map.sectors:
         for column in row:
-            fire_sectors[column.row][column.column] = column.burn_level
+            if column.burn_level > column.extinguish_level:
+                fire_sectors[column.row][column.column] = column.burn_level
+            else:
+                fire_sectors[column.row][column.column] = -column.extinguish_level
 
 
     # Plot the heatmap
-    plt.imshow(fire_sectors, cmap='hot', interpolation='nearest')
+    plt.imshow(fire_sectors, cmap='hot', interpolation='nearest', vmin=-100, vmax=100)
+
+    # cbar = plt.colorbar()
+    # cbar.set_label('Burn Level')
+
+    plt.savefig('plot.png')
+
+    plot = cv2.imread('plot.png')
+    cv2.imshow('image', plot)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     # Add colorbar
-    cbar = plt.colorbar()
-    cbar.set_label('Burn Level')
+
 
     # Show the plot
-    plt.show()
-
-    # # print(fire_sectors)
-    # plt.imshow(fire_sectors, cmap='hot', interpolation='nearest')
-
-    # Wyświetlenie heatmapy
     # plt.show()
-    # visualize using heatmap
-    # normalized_array = cv2.normalize(fire_sectors, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    #
-    # Display the heatmap
-    # cv2.imshow('Heatmap', normalized_array)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
