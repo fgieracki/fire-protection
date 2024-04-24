@@ -39,7 +39,7 @@ def main():
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
                     additional_burn = random.uniform(0.1, 2)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
-                    map.sectors[current_sector.row][current_sector.column].burn_level = max(100, map.sectors[
+                    map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                         current_sector.row][current_sector.column].burn_level)
 
                 elif current_sector.burn_level < 100 and current_sector.extinguish_level < 50:
@@ -53,8 +53,11 @@ def main():
                     if neighbor_fire:
                         additional_burn = random.uniform(0.1, 2)
                         map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
-                        map.sectors[current_sector.row][current_sector.column].burn_level = max(100, map.sectors[
+                        map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                             current_sector.row][current_sector.column].burn_level)
+                print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
+
+
         # if i % 10 == 0:
         visualize_fire(map)
 
@@ -78,8 +81,6 @@ def visualize_fire(map: ForestMap):
     # Plot the heatmap
     plt.imshow(fire_sectors, cmap='bwr', interpolation='nearest', vmin=-100, vmax=100)
 
-    # cbar = plt.colorbar()
-    # cbar.set_label('Burn Level')
 
     plt.savefig('plot.png')
 
