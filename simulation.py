@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from simulation.forest_map import ForestMap
+from simulation.fire_brigades.fire_brigade import FireBrigade
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -56,10 +57,14 @@ def main():
                         map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                             current_sector.row][current_sector.column].burn_level)
                 print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
+        
+        if max([sector.burn_level for row in map.sectors for sector in row]) > 20: #TODO: think about better condition
+            # TODO: implement sending fire brigades
+            fire_brigades = FireBrigade.from_conf("simulation/configurations/test_conf.json")
 
 
-        # if i % 10 == 0:
-        visualize_fire(map)
+        if i % 10 == 0:
+            visualize_fire(map)
 
         if i == 100:
             map.sectors[1][1].extinguish_level = 100
@@ -86,10 +91,23 @@ def visualize_fire(map: ForestMap):
 
     plot = cv2.imread('plot.png')
     cv2.imshow('image', plot)
+  
+    # vmin = -100
+    # vmax = 100
+    # normalized_values = (fire_sectors - vmin) / (vmax - vmin)
+    # normalized_values = np.clip(normalized_values, 0, 1)
+    # normalized_values = cv2.normalize(fire_sectors, None, 0.0, 1.0, cv2.NORM_MINMAX)
+
+    # heatmap = np.uint8(normalized_values * 255)
+    # heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_AUTUMN)
+    # heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_SUMMER)
+    # window_size = (500, 500)
+    # cv2.namedWindow('Heatmap', cv2.WINDOW_NORMAL)
+    # cv2.resizeWindow('Heatmap', window_size)
+    # cv2.imshow('Heatmap', heatmap)
 
     cv2.waitKey(1000)
     cv2.destroyAllWindows()
-
 
 
 if __name__ == '__main__':
