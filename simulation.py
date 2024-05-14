@@ -1,12 +1,16 @@
 import logging
 import random
 
+import time
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
 from simulation.forest_map import ForestMap
 from simulation.fire_brigades.fire_brigade import FireBrigade
+from simulation.fire_brigades.fire_brigade_state import FireBrigadeState
+from simulation.fire_situation.fire_situation import FireSituation
+from simulation.fire_situation.fire_situation_state import FireSituationState
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -17,6 +21,11 @@ logging.basicConfig(
 
 def main():
     map = ForestMap.from_conf("simulation/configurations/test_conf.json")
+    fire_brigades = FireBrigade.from_conf("simulation/configurations/test_conf.json")
+
+    sectors_to_extinguish = list(FireSituation)
+    fire_situations = 0
+    num_fire_brigades_available = len(fire_brigades)
 
     for row in map.sectors:
         for column in row:
@@ -56,13 +65,47 @@ def main():
                         map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
                         map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                             current_sector.row][current_sector.column].burn_level)
+                        
+                if current_sector.burn_level > 20 and current_sector.sector_id not in sectors_to_extinguish:
+                    sectors_to_extinguish.append(FireSituation(
+                        fire_situations,
+                        FireSituationState.ACTIVE,
+                        None,
+                        current_sector.sector_id,
+                        current_sector.burn_level,
+                        0,
+                        timestamp=time.time()
+                        )
+                    )
+                    fire_situations += 1
+                    print(f"New fire situation: {current_sector.sector_id}, {current_sector.burn_level}")
+
+
                 print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
         
-        if max([sector.burn_level for row in map.sectors for sector in row]) > 20: #TODO: think about better condition
+        if FireSituationState.ACTIVE in sectors_to_extinguish: #TODO: think about better condition
             # TODO: implement sending fire brigades
-            fire_brigades = FireBrigade.from_conf("simulation/configurations/test_conf.json")
+            for fire_situation in sectors_to_extinguish:
+                if fire_situation.state == FireSituationState.ACTIVE:
+                    sector_situation = map.get_sector(fire_situation.sector_id)
+                    if num_fire_brigades_available != 0:
+                        for fire_brigade in fire_brigades:
+                            print(fire_brigade.fire_brigade_id, fire_brigade.state)
+                            print(fire_brigade.state == FireBrigadeState.AVAILABLE)
+                            if fire_brigade.state == FireBrigadeState.AVAILABLE:
+                                # print(fire_brigade.destination)
+                                fire_situation.fire_brigade_id = fire_brigade.fire_brigade_id
+                                fire_situation.state = FireSituationState.BRIGADE_COMING
+                                print(map.get_sector_location(sector_situation))
+                                fire_brigade.move(map.get_sector_location(sector_situation))
+                                print("Fire brigade is sent")
+                                num_fire_brigades_available -= 1
+                                break
+                    else:
+                        print("No fire brigades available")
+                        break
 
-
+        # break
         if i % 10 == 0:
             visualize_fire(map)
 

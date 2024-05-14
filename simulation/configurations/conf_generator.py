@@ -18,8 +18,8 @@ def main():
 
     sectors = []
 
-    for i in range(300):
-        for j in range(300):
+    for i in range(3):
+        for j in range(3):
             sectors.append({
                 "sectorId": 3*j + i,
                 "row": i,
@@ -35,6 +35,27 @@ def main():
                     "pm2_5Concentration": 0
                 }
             })
+
+    fireBrigades = []
+
+    for i in range(3):
+        fireBrigades.append({
+            "fireBrigadeId": i,
+            "timestamp": str(datetime.now),
+            "initialState": 1,
+            "baseLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "initialLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "destination": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            }
+        })
 
     configuration = {
         "forestId": "test_forest",
@@ -63,7 +84,7 @@ def main():
         "sectors": sectors,
         "sensors": sensors,
         "cameras": [],
-        "fireBrigades": [],
+        "fireBrigades": fireBrigades,
         "foresterPatrols": []
     }
 

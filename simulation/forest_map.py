@@ -60,7 +60,7 @@ class ForestMap:
             "height": conf["height"],
             "width": conf["width"],
             "location": (
-                Location(**location) for location in locations
+                tuple(Location(**location) for location in locations)
             ),
             "sectors": sectors_
         }
@@ -113,6 +113,30 @@ class ForestMap:
     @property
     def sectors(self) -> list[list[Sector]]:
         return self._sectors
+    
+    def get_sector_with_max_burn_level(self) -> Sector:
+        max_burn_level = 0
+        max_burn_sector = None
+        for row in self._sectors:
+            for sector in row:
+                if sector.burn_level > max_burn_level:
+                    max_burn_level = sector.burn_level
+                    max_burn_sector = sector
+        return max_burn_sector
+    
+    def get_sector_location(self, sector: Sector) -> Location:
+
+        return Location(
+            longitude=self._location[0].longitude + sector.column * (self._location[1].longitude - self._location[0].longitude) / self._width,
+            latitude=self._location[0].latitude + sector.row * (self._location[2].latitude - self._location[1].latitude) / self._height
+        )
+    
+    def get_sector(self, sector_id: int) -> Sector:
+        for row in self._sectors:
+            for sector in row:
+                if sector.sector_id == sector_id:
+                    return sector
+        return None
 
     def find_sector(self, location: Location):
         lat_interpolation = (

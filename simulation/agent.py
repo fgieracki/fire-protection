@@ -3,13 +3,13 @@ from datetime import datetime
 from typing import TypeAlias, Union
 
 from simulation.sectors.sector import Sector
-from fire_brigades.fire_brigade_state import FireBrigadeState
-from forester_patrols.forester_patrol import ForesterPatrolState
+# from simulation.fire_brigades.fire_brigade_state import FireBrigadeState
+# from simulation.forester_patrols.forester_patrol import ForesterPatrolState
 
-from forest_map import ForestMap
+from simulation.forest_map import ForestMap
 from simulation.location import Location
 
-MovingAgentState: TypeAlias = Union[FireBrigadeState, ForesterPatrolState]
+# MovingAgentState: TypeAlias = Union[FireBrigadeState, ForesterPatrolState]
 
 
 class Agent(ABC):
@@ -48,9 +48,11 @@ class MovingAgent(Agent, ABC):
         forest_map: ForestMap,
         timestamp: datetime,
         base_location: Location,
-        initial_location: Location
+        initial_location: Location,
+        destination: Location
     ):
         self._base_location = base_location
+        self._destination = destination
         Agent.__init__(self, forest_map, timestamp, initial_location)
         
     @property

@@ -167,7 +167,7 @@
                 "longitude": 50.5,
                 "latitude": 50.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 3,
@@ -176,7 +176,7 @@
                 "longitude": 50.5,
                 "latitude": 51.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 6,
@@ -185,7 +185,7 @@
                 "longitude": 50.5,
                 "latitude": 52.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 1,
@@ -194,7 +194,7 @@
                 "longitude": 51.5,
                 "latitude": 50.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 4,
@@ -203,7 +203,7 @@
                 "longitude": 51.5,
                 "latitude": 51.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 7,
@@ -212,7 +212,7 @@
                 "longitude": 51.5,
                 "latitude": 52.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 2,
@@ -221,7 +221,7 @@
                 "longitude": 52.5,
                 "latitude": 50.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 5,
@@ -230,7 +230,7 @@
                 "longitude": 52.5,
                 "latitude": 51.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         },
         {
             "sensorId": 8,
@@ -239,10 +239,62 @@
                 "longitude": 52.5,
                 "latitude": 52.5
             },
-            "timestamp": "<built-in method now of type object at 0x1025c8980>"
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>"
         }
     ],
     "cameras": [],
-    "fireBrigades": [],
+    "fireBrigades": [
+        {
+            "fireBrigadeId": 0,
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>",
+            "initialState": 1,
+            "baseLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "initialLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "destination": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            }
+        },
+        {
+            "fireBrigadeId": 1,
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>",
+            "initialState": 1,
+            "baseLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "initialLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "destination": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            }
+        },
+        {
+            "fireBrigadeId": 2,
+            "timestamp": "<built-in method now of type object at 0x00007FFABA8B1CD0>",
+            "initialState": 1,
+            "baseLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "initialLocation": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            },
+            "destination": {
+                "longitude": 50.0,
+                "latitude": 50.0
+            }
+        }
+    ],
     "foresterPatrols": []
 }
