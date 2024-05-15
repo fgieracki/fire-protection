@@ -17,9 +17,13 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-
+image = cv2.imread('map.png')
+cv2.imshow('image', image)
+cv2.waitKey(1000)
+cv2.destroyAllWindows()
 
 def main():
+    
     map = ForestMap.from_conf("simulation/configurations/mapConfigMockup.json")
     fire_brigades = FireBrigade.from_conf("simulation/configurations/mapConfigMockup.json")
 
@@ -27,17 +31,24 @@ def main():
     fire_situations = 0
     num_fire_brigades_available = len(fire_brigades)
 
-    for row in map.sectors:
-        for column in row:
-            # print(column.sector_id)
-            print(column)
+    # for row in map.sectors:
+    #     for column in row:
+    #         # print(column.sector_id)
+    #         print(column)
 
     x_start = random.randint(1, len(map.sectors)-1)
     y_start = random.randint(1, len(map.sectors[1])-1)
 
     print(f"Starting position: {x_start}, {y_start}")
+    print(map.sectors.__len__(), map.sectors[1].__len__())
+    print(map.sectors[8][12])
     sector = map.sectors[x_start][y_start]
     sector.burn_level = 1
+    for i in range(1, len(map.sectors)):
+        for j in range(1, len(map.sectors[1])):
+            print(f"Row: {i}, Column: {j}, Burn level: {map.sectors[i][j].burn_level}")
+    
+    # visualize_fire(map)
 
     # main simulation
     for i in range(300):
@@ -98,7 +109,7 @@ def main():
                 #     print(f"New fire situation: {current_sector.sector_id}, {current_sector.burn_level}")
                 #
 
-                print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
+                #!!!!!!!!! print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
         
         # if FireSituationState.ACTIVE in sectors_to_extinguish: #TODO: think about better condition
         #     # TODO: implement sending fire brigades
@@ -122,6 +133,10 @@ def main():
         #                 print("No fire brigades available")
         #                 break
 
+
+        # for i in range(1, len(map.sectors)-1):
+        #     for j in range(1, len(map.sectors[1])-1):
+        #         print(f"Row: {i}, Column: {j}, Burn level: {map.sectors[i][j].burn_level}")
         # break
         if i % 10 == 0:
             visualize_fire(map)
@@ -129,24 +144,40 @@ def main():
         if i == 100:
             map.sectors[1][1].extinguish_level = 100
 
+        print('-----------------------')
+
 
 
 def visualize_fire(map: ForestMap):
-    fire_sectors = np.zeros((map.height, map.width))
+    fire_sectors = np.zeros((len(map.sectors), len(map.sectors[1])))
     print("TEST")
+    print(map.height, map.width)
+    print(fire_sectors.shape)
 
-    for row in map.sectors:
-        for column in row:
-            if column is None:
+    for row in range(1, len(map.sectors)):
+        for column in range(1, len(map.sectors[1])):
+            if map.sectors[row][column] is None:
+                # print("Column is None: " + str(row))
                 continue
-            if column.burn_level > column.extinguish_level:
-                fire_sectors[column.row][column.column] = column.burn_level
+            if map.sectors[row][column].burn_level > map.sectors[row][column].extinguish_level:
+                # print(f"Row: {column.row}, Column: {column.column}, Burn level: {column.burn_level}")
+                fire_sectors[row][column] = map.sectors[row][column].burn_level
             else:
-                fire_sectors[column.row][column.column] = -column.extinguish_level
+                # print(f"Row: {column.row}, Column: {column.column}, Extinguish level: {column.extinguish_level}")
+                fire_sectors[row][column] = -map.sectors[row][column].extinguish_level
+
+    # for i in range(1, len(fire_sectors)):
+    #     for j in range(1, len(fire_sectors[1])):
+    #         print(f"Row: {i}, Column: {j}, Burn level: {fire_sectors[i][j]}")
+    
+    print(max(fire_sectors.flatten()), min(fire_sectors.flatten()))
 
 
     # Plot the heatmap
-    plt.imshow(fire_sectors, cmap='bwr', interpolation='nearest', vmin=-100, vmax=100)
+    plt.xticks(range(0, len(fire_sectors[1])-1), range(1, len(fire_sectors[1])))
+    plt.yticks(range(0, len(fire_sectors)-1), range(1, len(fire_sectors)))
+    # plt.imshow(image)
+    plt.imshow(fire_sectors[1:,1:], cmap='bwr', alpha=0.5, interpolation='nearest', vmin=-100, vmax=100)
 
 
     plt.savefig('plot.png')
@@ -161,12 +192,17 @@ def visualize_fire(map: ForestMap):
     # normalized_values = cv2.normalize(fire_sectors, None, 0.0, 1.0, cv2.NORM_MINMAX)
 
     # heatmap = np.uint8(normalized_values * 255)
-    # heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_AUTUMN)
+    # heatmap = cv2.normalize(heatmap, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+
+    # # heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_AUTUMN)
     # heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_SUMMER)
-    # window_size = (500, 500)
+    # window_size = (image.shape[1], image.shape[0])
+    # overlay = cv2.addWeighted(image, 0.7, heatmap, 0.3, 0)
+    # # cv2.imshow('Heatmap', overlay)
+
     # cv2.namedWindow('Heatmap', cv2.WINDOW_NORMAL)
     # cv2.resizeWindow('Heatmap', window_size)
-    # cv2.imshow('Heatmap', heatmap)
+    # cv2.imshow('Heatmap', overlay)
 
     cv2.waitKey(1000)
     cv2.destroyAllWindows()

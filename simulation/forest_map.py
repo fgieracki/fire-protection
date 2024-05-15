@@ -50,10 +50,10 @@ class ForestMap:
             if SectorType[val["sectorType"]] is None:
                 print(val["sectorType"])
 
-            sectors_[val["row"]-1][val["column"]-1] = Sector(
+            sectors_[val["row"]][val["column"]] = Sector(
                 sector_id=val["sectorId"],
-                row=val["row"]-1,
-                column=val["column"]-1,
+                row=val["row"],
+                column=val["column"],
                 sector_type= SectorType[val["sectorType"]],
                 initial_state=initial_state,
             )
