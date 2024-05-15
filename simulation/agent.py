@@ -54,7 +54,18 @@ class MovingAgent(Agent, ABC):
         self._base_location = base_location
         self._destination = destination
         Agent.__init__(self, forest_map, timestamp, initial_location)
-        
+
+    def __init__(
+            self,
+            forest_map: ForestMap,
+            timestamp: datetime,
+            base_location: Location,
+            initial_location: Location,
+    ):
+        self._base_location = base_location
+        self._destination = base_location
+        Agent.__init__(self, forest_map, timestamp, initial_location)
+
     @property
     def base_location(self):
         return self._base_location

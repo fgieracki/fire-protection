@@ -255,10 +255,6 @@
             "initialLocation": {
                 "longitude": 50.0,
                 "latitude": 50.0
-            },
-            "destination": {
-                "longitude": 50.0,
-                "latitude": 50.0
             }
         },
         {
@@ -272,10 +268,6 @@
             "initialLocation": {
                 "longitude": 50.0,
                 "latitude": 50.0
-            },
-            "destination": {
-                "longitude": 50.0,
-                "latitude": 50.0
             }
         },
         {
@@ -287,10 +279,6 @@
                 "latitude": 50.0
             },
             "initialLocation": {
-                "longitude": 50.0,
-                "latitude": 50.0
-            },
-            "destination": {
                 "longitude": 50.0,
                 "latitude": 50.0
             }

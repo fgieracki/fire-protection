@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 import json
 
+from simulation import forest_map
 from simulation.agent import MovingAgent
 from simulation.forest_map import ForestMap
 from simulation.location import Location
@@ -17,12 +18,11 @@ class FireBrigade(MovingAgent):
         initial_state: FireBrigadeState,
         base_location: Location,
         initial_location: Location,
-        destination: Location
     ):
-        # MovingAgent.__init__(self, forest_map, timestamp, base_location, initial_location, destination)
+        MovingAgent.__init__(self, forest_map, timestamp, base_location, initial_location)
         self._fire_brigade_id = fire_brigade_id
         self._state = initial_state
-        self._destination = destination
+        self._destination = initial_location
 
     @property
     def fire_brigade_id(self) -> str:
@@ -45,40 +45,69 @@ class FireBrigade(MovingAgent):
         for val in conf["fireBrigades"]:
             fire_brigade_id=val["fireBrigadeId"],
             timestamp=val["timestamp"],
-            initial_state=val["initialState"],
+            initial_state=FireBrigadeState.AVAILABLE,
             base_location=Location(**val["baseLocation"]),
             initial_location=Location(**val["initialLocation"]),
-            destination=Location(**val["destination"])
+            destination=initial_location
             print(fire_brigade_id[0], timestamp, FireBrigadeState(initial_state[0]), base_location, initial_location, destination)
-            fire_brigades.append(cls(fire_brigade_id[0], timestamp, FireBrigadeState(initial_state[0]), base_location, initial_location, destination))
+            fire_brigades.append(cls(fire_brigade_id[0], timestamp, FireBrigadeState.AVAILABLE, base_location, initial_location))
 
         return fire_brigades
 
     def next(self):
         pass
 
-    def move(self, next_destination=None) -> None:
+
+    def change_destination(self, new_destination: Location): # to wywołać jak dostaniemy nową lokalizację na kolejce strażaków
+        self._destination = new_destination
+        if abs(self._destination.row - self._location.row) <= 0.1 and abs(self._destination.column - self._location.column) <= 0.1:
+            self._state = FireBrigadeState.AVAILABLE
+            print('Fire brigade has reached the destination.')
+
+        else:
+            self._state = FireBrigadeState.TRAVELLING
+        self.move()
+
+    def move(self) -> None: # to w każdej pętli
+        delta = 0.1
+
+        if(self._state == FireBrigadeState.TRAVELLING):
+            # make location delta = 0.1
+            if(self._destination.row > self._location.row):
+                self._location.row += delta
+            elif(self._destination.row < self._location.row):
+                self._location.row -= delta
+            if(self._destination.column > self._location.column):
+                self._location.column += delta
+            elif(self._destination.column < self._location.column):
+                self._location.column -= delta
+
+        if abs(self._destination.row - self._location.row) <= 0.1 and abs(self._destination.column - self._location.column) <= 0.1:
+                self._state = FireBrigadeState.AVAILABLE
+                print('Fire brigade has reached the destination.')
+
+
         # if next_destination is None:
         #     next_destination = self._destination
-            
-        if self._state == FireBrigadeState.AVAILABLE and next_destination != None:
-            self._state = FireBrigadeState.TRAVELLING
-            self._destination = next_destination
-            print('Fire brigade is travelling to the fire.')
 
-        elif self._state == FireBrigadeState.TRAVELLING:
-            if self._destination == self._base_location:
-                self._state = FireBrigadeState.AVAILABLE
-                print('Fire brigade has returned to the base.')
-            elif self._destination == self._initial_location:
-                self._state = FireBrigadeState.EXTINGUISHING
-
-            if next_destination != None:
-                self._destination = next_destination
-
-        elif self._state == FireBrigadeState.EXTINGUISHING:
-            self._state = FireBrigadeState.AVAILABLE
-            self._destination = self._base_location
+        # if self._state == FireBrigadeState.AVAILABLE and next_destination != None:
+        #     self._state = FireBrigadeState.TRAVELLING
+        #     self._destination = next_destination
+        #     print('Fire brigade is travelling to the fire.')
+        #
+        # elif self._state == FireBrigadeState.TRAVELLING:
+        #     if self._destination == self._base_location:
+        #         self._state = FireBrigadeState.AVAILABLE
+        #         print('Fire brigade has returned to the base.')
+        #     elif self._destination == self._initial_location:
+        #         self._state = FireBrigadeState.EXTINGUISHING
+        #
+        #     if next_destination != None:
+        #         self._destination = next_destination
+        #
+        # elif self._state == FireBrigadeState.EXTINGUISHING:
+        #     self._state = FireBrigadeState.AVAILABLE
+        #     self._destination = self._base_location
 
         self.log()
 

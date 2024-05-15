@@ -23,7 +23,7 @@ def main():
     map = ForestMap.from_conf("simulation/configurations/test_conf.json")
     fire_brigades = FireBrigade.from_conf("simulation/configurations/test_conf.json")
 
-    sectors_to_extinguish = list(FireSituation)
+    # sectors_to_extinguish = list(FireSituation)
     fire_situations = 0
     num_fire_brigades_available = len(fire_brigades)
 
@@ -46,8 +46,19 @@ def main():
                 if current_sector.sector_type == 6:
                     continue
 
+                # simulate fire extinguishing
+                if current_sector.burn_level > 0:
+                    extinguish = 0
+                    for fire_brigade in fire_brigades:
+                        # TODO: TUTAJ IF: jeśli fire_brigade jest w danym sektorze
+                        if fire_brigade.state == FireBrigadeState.AVAILABLE or fire_brigade.state == FireBrigadeState.EXTINGUISHING:
+                            extinguish = extinguish + random.uniform(0.001, 0.01)
+                            break
+                        fire_brigade.move()
+                    map.sectors[current_sector.row][current_sector.column].extinguish_level += extinguish
+
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
-                    additional_burn = random.uniform(0.1, 2)
+                    additional_burn = random.uniform(0.001, 0.05)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
                     map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                         current_sector.row][current_sector.column].burn_level)
@@ -66,44 +77,44 @@ def main():
                         map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                             current_sector.row][current_sector.column].burn_level)
                         
-                if current_sector.burn_level > 20 and current_sector.sector_id not in sectors_to_extinguish:
-                    sectors_to_extinguish.append(FireSituation(
-                        fire_situations,
-                        FireSituationState.ACTIVE,
-                        None,
-                        current_sector.sector_id,
-                        current_sector.burn_level,
-                        0,
-                        timestamp=time.time()
-                        )
-                    )
-                    fire_situations += 1
-                    print(f"New fire situation: {current_sector.sector_id}, {current_sector.burn_level}")
-
+                # if current_sector.burn_level > 20 and current_sector.sector_id not in sectors_to_extinguish:
+                #     sectors_to_extinguish.append(FireSituation(
+                #         fire_situations,
+                #         FireSituationState.ACTIVE,
+                #         None,
+                #         current_sector.sector_id,
+                #         current_sector.burn_level,
+                #         0,
+                #         timestamp=time.time()
+                #         )
+                #     )
+                #     fire_situations += 1
+                #     print(f"New fire situation: {current_sector.sector_id}, {current_sector.burn_level}")
+                #
 
                 print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
         
-        if FireSituationState.ACTIVE in sectors_to_extinguish: #TODO: think about better condition
-            # TODO: implement sending fire brigades
-            for fire_situation in sectors_to_extinguish:
-                if fire_situation.state == FireSituationState.ACTIVE:
-                    sector_situation = map.get_sector(fire_situation.sector_id)
-                    if num_fire_brigades_available != 0:
-                        for fire_brigade in fire_brigades:
-                            print(fire_brigade.fire_brigade_id, fire_brigade.state)
-                            print(fire_brigade.state == FireBrigadeState.AVAILABLE)
-                            if fire_brigade.state == FireBrigadeState.AVAILABLE:
-                                # print(fire_brigade.destination)
-                                fire_situation.fire_brigade_id = fire_brigade.fire_brigade_id
-                                fire_situation.state = FireSituationState.BRIGADE_COMING
-                                print(map.get_sector_location(sector_situation))
-                                fire_brigade.move(map.get_sector_location(sector_situation))
-                                print("Fire brigade is sent")
-                                num_fire_brigades_available -= 1
-                                break
-                    else:
-                        print("No fire brigades available")
-                        break
+        # if FireSituationState.ACTIVE in sectors_to_extinguish: #TODO: think about better condition
+        #     # TODO: implement sending fire brigades
+        #     for fire_situation in sectors_to_extinguish:
+        #         if fire_situation.state == FireSituationState.ACTIVE:
+        #             sector_situation = map.get_sector(fire_situation.sector_id)
+        #             if num_fire_brigades_available != 0:
+        #                 for fire_brigade in fire_brigades:
+        #                     print(fire_brigade.fire_brigade_id, fire_brigade.state)
+        #                     print(fire_brigade.state == FireBrigadeState.AVAILABLE)
+        #                     if fire_brigade.state == FireBrigadeState.AVAILABLE:
+        #                         # print(fire_brigade.destination)
+        #                         fire_situation.fire_brigade_id = fire_brigade.fire_brigade_id
+        #                         fire_situation.state = FireSituationState.BRIGADE_COMING
+        #                         print(map.get_sector_location(sector_situation))
+        #                         fire_brigade.move(map.get_sector_location(sector_situation))
+        #                         print("Fire brigade is sent")
+        #                         num_fire_brigades_available -= 1
+        #                         break
+        #             else:
+        #                 print("No fire brigades available")
+        #                 break
 
         # break
         if i % 10 == 0:
