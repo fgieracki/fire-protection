@@ -53,6 +53,21 @@ class FireBrigade(MovingAgent):
             fire_brigades.append(cls(fire_brigade_id[0], timestamp, FireBrigadeState.AVAILABLE, base_location, initial_location))
 
         return fire_brigades
+    
+    @classmethod
+    def consumeFromQueue(cls, queue):
+        fire_brigades = []
+        for val in queue:
+            fire_brigade_id=val["fireBrigadeId"],
+            initial_state=val["state"],
+            timestamp=val["timestamp"],
+            initial_location=Location(**val["location"]),
+            print(fire_brigade_id[0], initial_state, timestamp, initial_location)
+            if initial_state == "TRAVELLING":
+                base_location=Location(**val["baseLocation"]),
+                destination=Location(**val["destination"])
+
+        return fire_brigades    
 
     def next(self):
         pass

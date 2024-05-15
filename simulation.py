@@ -5,6 +5,8 @@ import time
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import pika
+import json
 
 from simulation.forest_map import ForestMap
 from simulation.fire_brigades.fire_brigade import FireBrigade
@@ -22,10 +24,30 @@ cv2.imshow('image', image)
 cv2.waitKey(1000)
 cv2.destroyAllWindows()
 
+def callback(ch, method, properties, body):
+    data = json.loads(body.decode('utf-8'))
+    # Przetwarzamy dane
+    print("Received message:", data)
+
+
+
+def connection(queue_name):
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue=queue_name)
+    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+
+    print('Waiting for messages...')
+    channel.start_consuming()
+
 def main():
     
     map = ForestMap.from_conf("simulation/configurations/mapConfigMockup.json")
     fire_brigades = FireBrigade.from_conf("simulation/configurations/mapConfigMockup.json")
+    
+    # TUTAJ: WYWOŁANIE FUNKCJI łączącej się z RabbitMQ
+    # connection("Fire brigades action")
 
     # sectors_to_extinguish = list(FireSituation)
     fire_situations = 0
@@ -44,12 +66,7 @@ def main():
     print(map.sectors[8][12])
     sector = map.sectors[x_start][y_start]
     sector.burn_level = 1
-    for i in range(1, len(map.sectors)):
-        for j in range(1, len(map.sectors[1])):
-            print(f"Row: {i}, Column: {j}, Burn level: {map.sectors[i][j].burn_level}")
     
-    # visualize_fire(map)
-
     # main simulation
     for i in range(300):
         old_sectors = map.sectors
@@ -109,7 +126,7 @@ def main():
                 #     print(f"New fire situation: {current_sector.sector_id}, {current_sector.burn_level}")
                 #
 
-                #!!!!!!!!! print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
+                print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
         
         # if FireSituationState.ACTIVE in sectors_to_extinguish: #TODO: think about better condition
         #     # TODO: implement sending fire brigades
@@ -134,10 +151,6 @@ def main():
         #                 break
 
 
-        # for i in range(1, len(map.sectors)-1):
-        #     for j in range(1, len(map.sectors[1])-1):
-        #         print(f"Row: {i}, Column: {j}, Burn level: {map.sectors[i][j].burn_level}")
-        # break
         if i % 10 == 0:
             visualize_fire(map)
 

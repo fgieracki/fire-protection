@@ -36,7 +36,7 @@ class ForestMap:
         locations = conf["location"]
         sectors_:list[list[Sector | None]] = [[None for _ in range(conf["width"] // conf["sectorSize"] + 1)] for _ in range(conf["height"] // conf["sectorSize"] + 1)]
         for val in conf["sectors"]:
-            print(val)
+            # print(val)
             initial_state = SectorState(
                 temperature=val["initialState"]["temperature"],
                 wind_speed=val["initialState"]["windSpeed"],
