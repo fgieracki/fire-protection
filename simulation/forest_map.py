@@ -34,8 +34,9 @@ class ForestMap:
             conf = json.load(fp)
 
         locations = conf["location"]
-        sectors_:list[list[Sector | None]] = [[None for _ in range(conf["width"])] for _ in range(conf["height"])]
+        sectors_:list[list[Sector | None]] = [[None for _ in range(conf["width"] // conf["sectorSize"] + 1)] for _ in range(conf["height"] // conf["sectorSize"] + 1)]
         for val in conf["sectors"]:
+            print(val)
             initial_state = SectorState(
                 temperature=val["initialState"]["temperature"],
                 wind_speed=val["initialState"]["windSpeed"],
@@ -46,13 +47,18 @@ class ForestMap:
                 pm2_5_concentration=val["initialState"]["pm2_5Concentration"],
             )
 
-            sectors_[val["row"]][val["column"]] = Sector(
+            if SectorType[val["sectorType"]] is None:
+                print(val["sectorType"])
+
+            sectors_[val["row"]-1][val["column"]-1] = Sector(
                 sector_id=val["sectorId"],
-                row=val["row"],
-                column=val["column"],
-                sector_type=val["sectorType"],
+                row=val["row"]-1,
+                column=val["column"]-1,
+                sector_type= SectorType[val["sectorType"]],
                 initial_state=initial_state,
             )
+
+
 
         values = {
             "forest_id": conf["forestId"],
@@ -162,11 +168,11 @@ class ForestMap:
 
         if row > 0:
             adjacent_sectors.append(old_sectors[row - 1][column])
-        if row < self.height - 1:
+        if row < len(old_sectors) - 1:
             adjacent_sectors.append(old_sectors[row + 1][column])
         if column > 0:
             adjacent_sectors.append(old_sectors[row][column - 1])
-        if column < self.width - 1:
+        if column < len(old_sectors[1]) - 1:
             adjacent_sectors.append(old_sectors[row][column + 1])
 
         # for row_index in range(max(row - 1, 0), min(row + 1, self.height - 1)):

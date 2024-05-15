@@ -47,7 +47,7 @@ class FireBrigade(MovingAgent):
             timestamp=val["timestamp"],
             initial_state=FireBrigadeState.AVAILABLE,
             base_location=Location(**val["baseLocation"]),
-            initial_location=Location(**val["initialLocation"]),
+            initial_location=Location(**val["currentLocation"]),
             destination=initial_location
             print(fire_brigade_id[0], timestamp, FireBrigadeState(initial_state[0]), base_location, initial_location, destination)
             fire_brigades.append(cls(fire_brigade_id[0], timestamp, FireBrigadeState.AVAILABLE, base_location, initial_location))

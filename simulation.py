@@ -20,8 +20,8 @@ logging.basicConfig(
 
 
 def main():
-    map = ForestMap.from_conf("simulation/configurations/test_conf.json")
-    fire_brigades = FireBrigade.from_conf("simulation/configurations/test_conf.json")
+    map = ForestMap.from_conf("simulation/configurations/mapConfigMockup.json")
+    fire_brigades = FireBrigade.from_conf("simulation/configurations/mapConfigMockup.json")
 
     # sectors_to_extinguish = list(FireSituation)
     fire_situations = 0
@@ -29,13 +29,14 @@ def main():
 
     for row in map.sectors:
         for column in row:
-            print(column.sector_id)
+            # print(column.sector_id)
+            print(column)
 
-    x_start = random.randint(0, map.width-1)
-    y_start = random.randint(0, map.height-1)
+    x_start = random.randint(1, len(map.sectors)-1)
+    y_start = random.randint(1, len(map.sectors[1])-1)
 
     print(f"Starting position: {x_start}, {y_start}")
-    sector = map.sectors[y_start][x_start]
+    sector = map.sectors[x_start][y_start]
     sector.burn_level = 1
 
     # main simulation
@@ -43,6 +44,8 @@ def main():
         old_sectors = map.sectors
         for row in old_sectors:
             for current_sector in row:
+                if current_sector is None:
+                    continue
                 if current_sector.sector_type == 6:
                     continue
 
@@ -58,7 +61,8 @@ def main():
                     map.sectors[current_sector.row][current_sector.column].extinguish_level += extinguish
 
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
-                    additional_burn = random.uniform(0.001, 0.05)
+                    # additional_burn = random.uniform(0.001, 0.05)
+                    additional_burn = random.uniform(1, 5)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
                     map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                         current_sector.row][current_sector.column].burn_level)
@@ -67,6 +71,8 @@ def main():
                     neighbors = map.get_adjacent_sectors(current_sector, old_sectors)
                     neighbor_fire = False
                     for neighbor in neighbors:
+                        if neighbor is None:
+                            continue
                         if neighbor.burn_level > 20 and neighbor.burn_level > neighbor.extinguish_level:
                             neighbor_fire = True
                             break
@@ -131,6 +137,8 @@ def visualize_fire(map: ForestMap):
 
     for row in map.sectors:
         for column in row:
+            if column is None:
+                continue
             if column.burn_level > column.extinguish_level:
                 fire_sectors[column.row][column.column] = column.burn_level
             else:
