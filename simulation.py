@@ -84,6 +84,7 @@ def main():
                         # TODO: TUTAJ IF: jeśli fire_brigade jest w danym sektorze
                         if fire_brigade.state == FireBrigadeState.AVAILABLE or fire_brigade.state == FireBrigadeState.EXTINGUISHING:
                             extinguish = extinguish + random.uniform(0.001, 0.01)
+                            fire_brigade.set_fireBrigadeState(state = FireBrigadeState.EXTINGUISHING)
                             break
                         fire_brigade.move()
                     map.sectors[current_sector.row][current_sector.column].extinguish_level += extinguish
@@ -110,7 +111,9 @@ def main():
                         map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
                         map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                             current_sector.row][current_sector.column].burn_level)
-                        
+
+                map.sectors[current_sector.row][current_sector.column].update_sensors()
+
                 # if current_sector.burn_level > 20 and current_sector.sector_id not in sectors_to_extinguish:
                 #     sectors_to_extinguish.append(FireSituation(
                 #         fire_situations,
@@ -149,6 +152,9 @@ def main():
         #             else:
         #                 print("No fire brigades available")
         #                 break
+
+
+        # update sensors data and push to queue Brigades State, Sensors
 
 
         if i % 10 == 0:

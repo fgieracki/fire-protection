@@ -2044,10 +2044,10 @@
   "sensors": [
     {
       "sensorId": 1,
-      "sensorType": "enum(SENSOR_TYPE)",
+      "sensorType": "PM2_5",
       "location": {
-        "longitude": 0,
-        "latitude": 0
+        "longitude": 20.132395645406604,
+        "latitude": 49.5588264763197
       },
       "timestamp": 1715762597000
     }

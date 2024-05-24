@@ -71,30 +71,25 @@ class ForestMap:
             "sectors": sectors_
         }
 
-        # parse this json to object:
-        # "sensors": [
-        #     {
-        #         "sensorId": 0,
-        #         "sensorType": 1,
-        #         "location": {
-        #             "longitude": 50.5,
-        #             "latitude": 50.5
-        #         },
-        #         "timestamp": "<built-in method now of type object at 0x1025c8980>"
-        #     },
-        #     {
-        #         "sensorId": 3,
-        #         "sensorType": 1,
-        #         "location": {
-        #             "longitude": 50.5,
-        #             "latitude": 51.5
-        #         },
-        #         "timestamp": "<built-in method now of type object at 0x1025c8980>"
-        #     },
+        min_lat = min(location.latitude for location in values["location"])
+        min_lon = min(location.longitude for location in values["location"])
+        diff_lat = max(location.latitude for location in values["location"]) - min_lat
+        diff_lon = max(location.longitude for location in values["location"]) - min_lon
+        width_sectors = diff_lat / (values["width"] // conf["sectorSize"] + 1)
+        height_sectors = diff_lon / (values["height"] // conf["sectorSize"] + 1)
 
-
-
-
+        sensors = conf["sensors"]
+        print(sensors)
+        for sensor in sensors:
+            sensor_location = Location(**sensor["location"])
+            row = int((sensor_location.latitude - min_lat) / height_sectors) + 1
+            column = int((sensor_location.longitude - min_lon) / width_sectors) + 1
+            print(f"Adding sensor to sector {row} {column}")
+            if row < 0 or row >= len(sectors_) or column < 0 or column >= len(sectors_[0]):
+                continue
+            if sectors_[row][column] is not None:
+                sectors_[row][column].add_sensor(sensor)
+                print(f"Added sensor to sector {row} {column}")
 
         return ForestMap(**values)
 

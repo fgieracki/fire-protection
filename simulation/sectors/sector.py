@@ -1,3 +1,4 @@
+import random
 from threading import Lock
 
 from simulation.sectors.sector_state import SectorState
@@ -69,3 +70,11 @@ class Sector:
     def remove_sensor(self, sensor):
         self._sensors.remove(sensor)
 
+    def update_sensors(self):
+        for sensor in self._sensors:
+            if sensor['sensorType'] == "PM2_5":
+                sensor['data'] = {
+                    "pm2_5Concentration": self._state.pm2_5_concentration + random.uniform(-0.1, 0.1)
+                }
+            # TODO: add more sensor types
+            print(sensor)

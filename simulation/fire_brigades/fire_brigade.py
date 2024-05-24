@@ -35,7 +35,11 @@ class FireBrigade(MovingAgent):
     @property
     def destination(self) -> Location:
         return self._destination
-    
+
+    def set_fireBrigadeState(self, state: FireBrigadeState):
+        self._state = state
+
+
     @classmethod
     def from_conf(cls, conf_file: str):
         with open(conf_file, 'r') as fp:
