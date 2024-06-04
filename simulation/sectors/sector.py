@@ -90,3 +90,15 @@ class Sector:
 
             # TODO: add more sensor types
             print(sensor)
+
+    def make_json(self, sensor_id):
+        return {
+            "sensorId": sensor_id,
+            "timestamp": self._sensors[sensor_id]['timestamp'],
+            "sensorType": self._sensors[sensor_id]['sensorType'],
+            "location": {
+                "longitude": self._sensors[sensor_id]['location']['longitude'],
+                "latitude": self._sensors[sensor_id]['location']['latitude'],
+            },
+            "data": self._sensors[sensor_id]['data']
+        }
