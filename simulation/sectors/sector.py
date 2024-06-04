@@ -76,5 +76,15 @@ class Sector:
                 sensor['data'] = {
                     "pm2_5Concentration": self._state.pm2_5_concentration + random.uniform(-0.1, 0.1)
                 }
+            elif sensor['sensorType'] == "TEMPERATURE_AND_AIR_HUMIDITY":
+                sensor['data'] = {
+                    "temperature": self._state.temperature + random.uniform(-5.0, 5.0),
+                    "airHumidity": self._state.air_humidity + random.uniform(-5.0, 5.0)
+                }
+            elif sensor['sensorType'] == "LITTER_MOISTURE":
+                sensor['data'] = {
+                    "plantLitterMoisture": self._state.plant_litter_moisture + random.uniform(-5.0, 5.0)
+                }
+
             # TODO: add more sensor types
             print(sensor)

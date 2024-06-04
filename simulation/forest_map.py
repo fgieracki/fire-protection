@@ -14,15 +14,15 @@ class ForestMap:
         self,
         forest_id: str,
         forest_name: str,
-        height: int,
-        width: int,
+        rows: int,
+        columns: int,
         location: ForestMapCornerLocations,
         sectors: list[list[Sector]]
     ):
         self._forest_id = forest_id
         self._forest_name = forest_name
-        self._height = height
-        self._width = width
+        self._rows = rows
+        self._columns = columns
         self._location = location
         self._sectors = sectors
 
@@ -34,7 +34,7 @@ class ForestMap:
             conf = json.load(fp)
 
         locations = conf["location"]
-        sectors_:list[list[Sector | None]] = [[None for _ in range(conf["width"] // conf["sectorSize"] + 1)] for _ in range(conf["height"] // conf["sectorSize"] + 1)]
+        sectors_:list[list[Sector | None]] = [[None for _ in range(conf["columns"] + 1)] for _ in range(conf["rows"] + 1)]
         for val in conf["sectors"]:
             # print(val)
             initial_state = SectorState(
@@ -49,7 +49,6 @@ class ForestMap:
 
             if SectorType[val["sectorType"]] is None:
                 print(val["sectorType"])
-
             sectors_[val["row"]][val["column"]] = Sector(
                 sector_id=val["sectorId"],
                 row=val["row"],
@@ -63,8 +62,8 @@ class ForestMap:
         values = {
             "forest_id": conf["forestId"],
             "forest_name": conf["forestName"],
-            "height": conf["height"],
-            "width": conf["width"],
+            "rows": conf["rows"],
+            "columns": conf["columns"],
             "location": (
                 tuple(Location(**location) for location in locations)
             ),
@@ -75,8 +74,8 @@ class ForestMap:
         min_lon = min(location.longitude for location in values["location"])
         diff_lat = max(location.latitude for location in values["location"]) - min_lat
         diff_lon = max(location.longitude for location in values["location"]) - min_lon
-        width_sectors = diff_lat / (values["width"] // conf["sectorSize"] + 1)
-        height_sectors = diff_lon / (values["height"] // conf["sectorSize"] + 1)
+        width_sectors = diff_lat / values["rows"]
+        height_sectors = diff_lon / values["columns"]
 
         sensors = conf["sensors"]
         print(sensors)
@@ -102,12 +101,12 @@ class ForestMap:
         return self._forest_name
 
     @property
-    def height(self) -> int:
-        return self._height
+    def rows(self) -> int:
+        return self._rows
 
     @property
-    def width(self) -> int:
-        return self._width
+    def columns(self) -> int:
+        return self._columns
 
     @property
     def location(self) -> ForestMapCornerLocations:

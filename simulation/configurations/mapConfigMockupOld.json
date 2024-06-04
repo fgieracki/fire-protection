@@ -1,8 +1,10 @@
 {
   "forestId": 1,
   "forestName": "Ochotnica",
-  "columns": 12,
-  "rows": 8,
+  "width": 1200,
+  "height": 800,
+  "sectorSize": 100,
+  "imageReference": "string",
   "location": [
     {
       "longitude": 20.132385645406604,
@@ -2042,10 +2044,10 @@
   "sensors": [
     {
       "sensorId": 1,
-      "sensorType": "enum(SENSOR_TYPE)",
+      "sensorType": "PM2_5",
       "location": {
-        "longitude": 0,
-        "latitude": 0
+        "longitude": 20.132395645406604,
+        "latitude": 49.5588264763197
       },
       "timestamp": 1715762597000
     }

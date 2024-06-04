@@ -170,7 +170,7 @@ def main():
 def visualize_fire(map: ForestMap):
     fire_sectors = np.zeros((len(map.sectors), len(map.sectors[1])))
     print("TEST")
-    print(map.height, map.width)
+    print(map.rows, map.columns)
     print(fire_sectors.shape)
 
     for row in range(1, len(map.sectors)):
