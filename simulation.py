@@ -88,6 +88,12 @@ def main():
                             break
                         fire_brigade.move()
                     map.sectors[current_sector.row][current_sector.column].extinguish_level += extinguish
+                    map.sectors[current_sector.row][current_sector.column].state.temperature -= extinguish
+                    map.sectors[current_sector.row][current_sector.column].state.air_humidity += extinguish
+                    map.sectors[current_sector.row][current_sector.column].state.plant_litter_moisture += extinguish
+                    map.sectors[current_sector.row][current_sector.column].state.temperature -= extinguish*5
+                    map.sectors[current_sector.row][current_sector.column].state.co2_concentration -= extinguish*5
+                    map.sectors[current_sector.row][current_sector.column].state.pm2_5_concentration -= extinguish*5
 
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
                     # additional_burn = random.uniform(0.001, 0.05)
@@ -95,6 +101,11 @@ def main():
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
                     map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                         current_sector.row][current_sector.column].burn_level)
+
+                    map.sectors[current_sector.row][current_sector.column].state.pm2_5_concentration += additional_burn*10
+                    map.sectors[current_sector.row][current_sector.column].state.temperature += additional_burn*5
+                    map.sectors[current_sector.row][current_sector.column].state.co2_concentration += additional_burn*5
+                    map.sectors[current_sector.row][current_sector.column].state.pm2_5_concentration += additional_burn*5
 
                 elif current_sector.burn_level < 100 and current_sector.extinguish_level < 50:
                     neighbors = map.get_adjacent_sectors(current_sector, old_sectors)

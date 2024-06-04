@@ -71,6 +71,8 @@ class Sector:
         self._sensors.remove(sensor)
 
     def update_sensors(self):
+        # update sector state date regarding extingush and burn level
+
         for sensor in self._sensors:
             if sensor['sensorType'] == "PM2_5":
                 sensor['data'] = {
