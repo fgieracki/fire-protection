@@ -29,46 +29,62 @@ cv2.destroyAllWindows()
 
 
 def connection_prodcuer(exchange_name, username, password):
-    CONNECTION_CREDENTIALS = pika.PlainCredentials(username, password)
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', credentials=CONNECTION_CREDENTIALS))
-    channel = connection.channel()
-    channel.exchange_declare(exchange_name, durable=True, exchange_type='topic')
+    try:
+        CONNECTION_CREDENTIALS = pika.PlainCredentials(username, password)
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', credentials=CONNECTION_CREDENTIALS))
+        channel = connection.channel()
+        channel.exchange_declare(exchange_name, durable=True, exchange_type='topic')
 
-    channel.queue_declare(queue='temperature-humidity-sensors')
-    channel.queue_bind(exchange=exchange_name, queue='temperature-humidity-sensors', routing_key='temperature-humidity-sensors')
+        channel.queue_declare(queue='temperature-humidity-sensors')
+        channel.queue_bind(exchange=exchange_name, queue='temperature-humidity-sensors', routing_key='temperature-humidity-sensors')
 
-    channel.queue_declare(queue='wind-speed-sensors')
-    channel.queue_bind(exchange=exchange_name, queue='wind-speed-sensors', routing_key='wind-speed-sensors')
+        channel.queue_declare(queue='wind-speed-sensors')
+        channel.queue_bind(exchange=exchange_name, queue='wind-speed-sensors', routing_key='wind-speed-sensors')
 
-    channel.queue_declare(queue='wind-direction-sensors')
-    channel.queue_bind(exchange=exchange_name, queue='wind-direction-sensors', routing_key='wind-direction-sensors')
+        channel.queue_declare(queue='wind-direction-sensors')
+        channel.queue_bind(exchange=exchange_name, queue='wind-direction-sensors', routing_key='wind-direction-sensors')
 
-    channel.queue_declare(queue='litter-moisture-sensors')
-    channel.queue_bind(exchange=exchange_name, queue='litter-moisture-sensors', routing_key='litter-moisture-sensors')
+        channel.queue_declare(queue='litter-moisture-sensors')
+        channel.queue_bind(exchange=exchange_name, queue='litter-moisture-sensors', routing_key='litter-moisture-sensors')
 
-    channel.queue_declare(queue='pm2_5-sensors')
-    channel.queue_bind(exchange=exchange_name, queue='pm2_5-sensors', routing_key='pm2_5-sensors')
+        channel.queue_declare(queue='pm2_5-sensors')
+        channel.queue_bind(exchange=exchange_name, queue='pm2_5-sensors', routing_key='pm2_5-sensors')
 
-    channel.queue_declare(queue='co2-sensors')
-    channel.queue_bind(exchange=exchange_name, queue='co2-sensors', routing_key='co2-sensors')
+        channel.queue_declare(queue='co2-sensors')
+        channel.queue_bind(exchange=exchange_name, queue='co2-sensors', routing_key='co2-sensors')
 
-    channel.queue_declare(queue='camera-topic')
-    channel.queue_bind(exchange=exchange_name, queue='camera-topic', routing_key='camera-topic')
+        channel.queue_declare(queue='camera-topic')
+        channel.queue_bind(exchange=exchange_name, queue='camera-topic', routing_key='camera-topic')
 
-    channel.queue_declare(queue='fire-brigades-state')
-    channel.queue_bind(exchange=exchange_name, queue='fire-brigades-state', routing_key='fire-brigades-state')
+        channel.queue_declare(queue='fire-brigades-state')
+        channel.queue_bind(exchange=exchange_name, queue='fire-brigades-state', routing_key='fire-brigades-state')
 
-    channel.queue_declare(queue='forest-patrol-state')
-    channel.queue_bind(exchange=exchange_name, queue='forest-patrol-state', routing_key='forest-patrol-state')
+        channel.queue_declare(queue='forest-patrol-state')
+        channel.queue_bind(exchange=exchange_name, queue='forest-patrol-state', routing_key='forest-patrol-state')
 
-    return connection, channel
+        return connection, channel
+    
+    except Exception as e:
+        print(f"Error connecting to RabbitMQ: {e}")
+        return None, None
 
 # this function assumes that the connection is already made
-def message_producer(exchange, channel, queue_name, message):
-    channel.basic_publish(exchange=exchange, routing_key=queue_name, body=message)
+def message_producer(exchange, channel, routing_key, message):
+    try:
+        if channel is None:
+            print("Channel is None")
+            return
+        channel.basic_publish(exchange=exchange, routing_key=routing_key, body=message)
+        print(f"Sent message: {message}")
+    except Exception as e:
+        print(f"Error sending message: {e}")
 
 def closing_connection(connection):
-    connection.close()
+    if connection is not None:
+        connection.close()
+        print("Connection closed")
+    else:
+        print("Connection is None")
 
 def callback(ch, method, properties, body):
     data = json.loads(body.decode('utf-8'))
@@ -97,13 +113,15 @@ def main():
     map = ForestMap.from_conf("simulation/configurations/mapConfigMockup.json")
     fire_brigades = FireBrigade.from_conf("simulation/configurations/mapConfigMockup.json")
     
-    # TUTAJ: WYWOŁANIE FUNKCJI łączącej się z RabbitMQ
-    # exchange_name = "TEST"
-    # username = "guest"
-    # password = "guest"
-    # connection, channel = connection_prodcuer(exchange_name, username, password)
+    EXCHANGE_NAME = "TEST"
+    USERNAME = "guest"
+    PASSWORD = "guest"
+    # TODO: WAITING FOR RABBITMQ SERVER
+    # connection, channel = connection_prodcuer(EXCHANGE_NAME, USERNAME, PASSWORD)
+    # if connection is None or channel is None:
+    #     print("Connection failed")
+    #     return
     # connection, channel = connection_consumer(exchange_name, username, password)
-    # connection("Fire brigades action")
 
     # sectors_to_extinguish = list(FireSituation)
     fire_situations = 0
@@ -191,24 +209,18 @@ def main():
                 map.sectors[current_sector.row][current_sector.column].update_sensors()
 
                 print(current_sector.row, current_sector.column, map.sectors[current_sector.row][current_sector.column].sensors)
-                for sensor in map.sectors[current_sector.row][current_sector.column].sensors:
-                    message_producer(exchange_name, channel, switcher.get(sensor['sensorType']),
-                    json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
+                if len(map.sectors[current_sector.row][current_sector.column].sensors) > 0:
+                    print(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType'])
+                    print(switcher.get(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType']))
+                    for sensor in map.sectors[current_sector.row][current_sector.column].sensors:
+                        print(sensor)
+                        print(json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
+                        # TODO: WAITING FOR RABBITMQ SERVER
+                        # message_producer(EXCHANGE_NAME, channel, switcher.get(sensor['sensorType']),
+                        # json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
 
-                # if current_sector.burn_level > 20 and current_sector.sector_id not in sectors_to_extinguish:
-                #     sectors_to_extinguish.append(FireSituation(
-                #         fire_situations,
-                #         FireSituationState.ACTIVE,
-                #         None,
-                #         current_sector.sector_id,
-                #         current_sector.burn_level,
-                #         0,
-                #         timestamp=time.time()
-                #         )
-                #     )
-                #     fire_situations += 1
-                #     print(f"New fire situation: {current_sector.sector_id}, {current_sector.burn_level}")
-                #
+                
+                
 
                 # print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
         
@@ -245,6 +257,7 @@ def main():
             map.sectors[1][1].extinguish_level = 100
 
         print('-----------------------')
+    # closing_connection(connection)
 
 
 
