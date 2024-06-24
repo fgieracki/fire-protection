@@ -151,7 +151,7 @@ def main():
                     }
     
     # main simulation
-    for i in range(300):
+    for i in range(600000):
         old_sectors = map.sectors
         for row in old_sectors:
             for current_sector in row:
@@ -166,7 +166,7 @@ def main():
                     for fire_brigade in fire_brigades:
                         # TODO: TUTAJ IF: jeśli fire_brigade jest w danym sektorze
                         if fire_brigade.state == FireBrigadeState.AVAILABLE or fire_brigade.state == FireBrigadeState.EXTINGUISHING:
-                            extinguish = extinguish + random.uniform(0.001, 0.01)
+                            extinguish = extinguish + random.uniform(0.001, 0.02)
                             fire_brigade.set_fireBrigadeState(state = FireBrigadeState.EXTINGUISHING)
                             break
                         fire_brigade.move()
@@ -179,8 +179,8 @@ def main():
                     map.sectors[current_sector.row][current_sector.column].state.pm2_5_concentration -= extinguish*5
 
                 if current_sector.burn_level > 0 and current_sector.burn_level < 100 and current_sector.extinguish_level < current_sector.burn_level:
-                    # additional_burn = random.uniform(0.001, 0.05)
-                    additional_burn = random.uniform(1, 5)
+                    additional_burn = random.uniform(0.001, 0.05)
+                    # additional_burn = random.uniform(1, 5)
                     map.sectors[current_sector.row][current_sector.column].burn_level += additional_burn
                     map.sectors[current_sector.row][current_sector.column].burn_level = min(100, map.sectors[
                         current_sector.row][current_sector.column].burn_level)
@@ -219,42 +219,10 @@ def main():
                         # message_producer(EXCHANGE_NAME, channel, switcher.get(sensor['sensorType']),
                         # json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
 
-                
-                
-
-                # print(f"Current sector: {current_sector.row}, {current_sector.column}, burn level: {current_sector.burn_level}")
-        
-        # if FireSituationState.ACTIVE in sectors_to_extinguish: #TODO: think about better condition
-        #     # TODO: implement sending fire brigades
-        #     for fire_situation in sectors_to_extinguish:
-        #         if fire_situation.state == FireSituationState.ACTIVE:
-        #             sector_situation = map.get_sector(fire_situation.sector_id)
-        #             if num_fire_brigades_available != 0:
-        #                 for fire_brigade in fire_brigades:
-        #                     print(fire_brigade.fire_brigade_id, fire_brigade.state)
-        #                     print(fire_brigade.state == FireBrigadeState.AVAILABLE)
-        #                     if fire_brigade.state == FireBrigadeState.AVAILABLE:
-        #                         # print(fire_brigade.destination)
-        #                         fire_situation.fire_brigade_id = fire_brigade.fire_brigade_id
-        #                         fire_situation.state = FireSituationState.BRIGADE_COMING
-        #                         print(map.get_sector_location(sector_situation))
-        #                         fire_brigade.move(map.get_sector_location(sector_situation))
-        #                         print("Fire brigade is sent")
-        #                         num_fire_brigades_available -= 1
-        #                         break
-        #             else:
-        #                 print("No fire brigades available")
-        #                 break
-
-
-        # update sensors data and push to queue Brigades State, Sensors
-
+        time.sleep(2.0)
 
         if i % 10 == 0:
             visualize_fire(map)
-
-        if i == 100:
-            map.sectors[1][1].extinguish_level = 100
 
         print('-----------------------')
     # closing_connection(connection)

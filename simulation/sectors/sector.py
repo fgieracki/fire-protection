@@ -74,6 +74,7 @@ class Sector:
         # update sector state date regarding extingush and burn level
 
         for sensor in self._sensors:
+            sensor['timestamp'] = sensor['timestamp'] + 1000
             if sensor['sensorType'] == "PM2_5":
                 sensor['data'] = {
                     "pm2_5Concentration": self._state.pm2_5_concentration + random.uniform(-0.1, 0.1)
@@ -87,18 +88,20 @@ class Sector:
                 sensor['data'] = {
                     "plantLitterMoisture": self._state.plant_litter_moisture + random.uniform(-5.0, 5.0)
                 }
-
-            # TODO: add more sensor types
+            elif sensor['sensorType'] == "CO2":
+                sensor['data'] = {
+                    "co2Concentration": self._state.co2_concentration + random.uniform(-5.0, 5.0)
+                }
             print(sensor)
 
     def make_json(self, sensor_id):
         return {
             "sensorId": sensor_id,
-            "timestamp": self._sensors[sensor_id]['timestamp'],
-            "sensorType": self._sensors[sensor_id]['sensorType'],
+            "timestamp": self._sensors[sensor_id-1]['timestamp'],
+            "sensorType": self._sensors[sensor_id-1]['sensorType'],
             "location": {
-                "longitude": self._sensors[sensor_id]['location']['longitude'],
-                "latitude": self._sensors[sensor_id]['location']['latitude'],
+                "longitude": self._sensors[sensor_id-1]['location']['longitude'],
+                "latitude": self._sensors[sensor_id-1]['location']['latitude'],
             },
-            "data": self._sensors[sensor_id]['data']
+            "data": self._sensors[sensor_id-1]['data']
         }
