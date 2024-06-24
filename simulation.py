@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pika
 import json
+from datetime import datetime, timezone
 
 from simulation.forest_map import ForestMap
 from simulation.fire_brigades.fire_brigade import FireBrigade
@@ -35,32 +36,32 @@ def connection_prodcuer(exchange_name, username, password):
         channel = connection.channel()
         channel.exchange_declare(exchange_name, durable=True, exchange_type='topic')
 
-        channel.queue_declare(queue='temperature-humidity-sensors')
-        channel.queue_bind(exchange=exchange_name, queue='temperature-humidity-sensors', routing_key='temperature-humidity-sensors')
+        channel.queue_declare(queue='tempAndAirHumidity')
+        channel.queue_bind(exchange=exchange_name, queue='tempAndAirHumidity', routing_key='tempAndAirHumidity')
 
-        channel.queue_declare(queue='wind-speed-sensors')
-        channel.queue_bind(exchange=exchange_name, queue='wind-speed-sensors', routing_key='wind-speed-sensors')
+        channel.queue_declare(queue='windSpeed')
+        channel.queue_bind(exchange=exchange_name, queue='windSpeed', routing_key='windSpeed')
 
-        channel.queue_declare(queue='wind-direction-sensors')
-        channel.queue_bind(exchange=exchange_name, queue='wind-direction-sensors', routing_key='wind-direction-sensors')
+        channel.queue_declare(queue='windDirection')
+        channel.queue_bind(exchange=exchange_name, queue='windDirection', routing_key='windDirection')
 
-        channel.queue_declare(queue='litter-moisture-sensors')
-        channel.queue_bind(exchange=exchange_name, queue='litter-moisture-sensors', routing_key='litter-moisture-sensors')
+        channel.queue_declare(queue='litterMoisture')
+        channel.queue_bind(exchange=exchange_name, queue='litterMoisture', routing_key='litterMoisture')
 
-        channel.queue_declare(queue='pm2_5-sensors')
-        channel.queue_bind(exchange=exchange_name, queue='pm2_5-sensors', routing_key='pm2_5-sensors')
+        channel.queue_declare(queue='pm25')
+        channel.queue_bind(exchange=exchange_name, queue='pm25', routing_key='pm25')
 
-        channel.queue_declare(queue='co2-sensors')
-        channel.queue_bind(exchange=exchange_name, queue='co2-sensors', routing_key='co2-sensors')
+        channel.queue_declare(queue='co2')
+        channel.queue_bind(exchange=exchange_name, queue='co2', routing_key='co2')
 
-        channel.queue_declare(queue='camera-topic')
-        channel.queue_bind(exchange=exchange_name, queue='camera-topic', routing_key='camera-topic')
+        channel.queue_declare(queue='camera')
+        channel.queue_bind(exchange=exchange_name, queue='camera', routing_key='camera')
 
-        channel.queue_declare(queue='fire-brigades-state')
-        channel.queue_bind(exchange=exchange_name, queue='fire-brigades-state', routing_key='fire-brigades-state')
+        channel.queue_declare(queue='fireBrigade')
+        channel.queue_bind(exchange=exchange_name, queue='fireBrigade', routing_key='fireBrigade')
 
-        channel.queue_declare(queue='forest-patrol-state')
-        channel.queue_bind(exchange=exchange_name, queue='forest-patrol-state', routing_key='forest-patrol-state')
+        channel.queue_declare(queue='foresterPatrol')
+        channel.queue_bind(exchange=exchange_name, queue='foresterPatrol', routing_key='foresterPatrol')
 
         return connection, channel
     
@@ -68,12 +69,12 @@ def connection_prodcuer(exchange_name, username, password):
         print(f"Error connecting to RabbitMQ: {e}")
         return None, None
 
-# this function assumes that the connection is already made
 def message_producer(exchange, channel, routing_key, message):
     try:
         if channel is None:
             print("Channel is None")
             return
+        print(f"Channel: {channel}")
         channel.basic_publish(exchange=exchange, routing_key=routing_key, body=message)
         print(f"Sent message: {message}")
     except Exception as e:
@@ -88,7 +89,6 @@ def closing_connection(connection):
 
 def callback(ch, method, properties, body):
     data = json.loads(body.decode('utf-8'))
-    # Przetwarzamy dane
     print("Received message:", data)
 
 # def connection_consumer(exchange_name, username, password):
@@ -113,17 +113,17 @@ def main():
     map = ForestMap.from_conf("simulation/configurations/mapConfigMockup.json")
     fire_brigades = FireBrigade.from_conf("simulation/configurations/mapConfigMockup.json")
     
-    EXCHANGE_NAME = "TEST"
+    EXCHANGE_NAME = "updates"
     USERNAME = "guest"
     PASSWORD = "guest"
-    # TODO: WAITING FOR RABBITMQ SERVER
-    # connection, channel = connection_prodcuer(EXCHANGE_NAME, USERNAME, PASSWORD)
-    # if connection is None or channel is None:
-    #     print("Connection failed")
-    #     return
+    # WAITING FOR RABBITMQ SERVER
+    connection, channel = connection_prodcuer(EXCHANGE_NAME, USERNAME, PASSWORD)
+    if connection is None or channel is None:
+        print("Connection failed")
+        return
+    print("Connection established")
     # connection, channel = connection_consumer(exchange_name, username, password)
 
-    # sectors_to_extinguish = list(FireSituation)
     fire_situations = 0
     num_fire_brigades_available = len(fire_brigades)
 
@@ -141,15 +141,15 @@ def main():
     sector = map.sectors[x_start][y_start]
     sector.burn_level = 1
     switcher = {
-                        "PM2_5": "pm2_5-sensors",
-                        "TEMPERATURE_AND_AIR_HUMIDITY": "temperature-humidity-sensors",
-                        "LITTER_MOISTURE": "litter-moisture-sensors",
-                        "CO2": "co2-sensors",
-                        "WIND_SPEED": "wind-speed-sensors",
-                        "WIND_DIRECTION": "wind-direction-sensors",
-                        "CAMERA": "camera-topic"
-                    }
-    
+        "PM2_5": "pm25",
+        "TEMPERATURE_AND_AIR_HUMIDITY": "tempAndAirHumidity",
+        "LITTER_MOISTURE": "litterMoisture",
+        "CO2": "co2",
+        "WIND_SPEED": "windSpeed",
+        "WIND_DIRECTION": "windDirection",
+        "CAMERA": "camera"
+    }
+
     # main simulation
     for i in range(600000):
         old_sectors = map.sectors
@@ -212,11 +212,13 @@ def main():
                 if len(map.sectors[current_sector.row][current_sector.column].sensors) > 0:
                     print(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType'])
                     print(switcher.get(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType']))
+                    
                     for sensor in map.sectors[current_sector.row][current_sector.column].sensors:
-                        print(sensor)
+                        print(sensor, "sensor")
                         print(json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
                         # TODO: WAITING FOR RABBITMQ SERVER
                         # message_producer(EXCHANGE_NAME, channel, switcher.get(sensor['sensorType']),
+                                        #  example message
                         # json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
 
         time.sleep(2.0)
@@ -225,7 +227,7 @@ def main():
             visualize_fire(map)
 
         print('-----------------------')
-    # closing_connection(connection)
+    closing_connection(connection)
 
 
 
