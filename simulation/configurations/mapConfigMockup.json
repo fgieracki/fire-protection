@@ -2048,6 +2048,51 @@
         "latitude": 49.50957947425961
       },
       "timestamp": 1715762597000
+    },
+    {
+      "sensorId": 2,
+      "sensorType": "TEMPERATURE_AND_AIR_HUMIDITY",
+      "location": {
+        "longitude": 20.142385645406604,
+        "latitude": 49.50957947425961
+      },
+      "timestamp": 1715762597000
+    },
+    {
+      "sensorId": 3,
+      "sensorType": "CO2",
+      "location": {
+        "longitude": 20.142385645406604,
+        "latitude": 49.50957947425961
+      },
+      "timestamp": 1715762597000
+    },
+    {
+      "sensorId": 4,
+      "sensorType": "WIND_SPEED",
+      "location": {
+        "longitude": 20.142385645406604,
+        "latitude": 49.50957947425961
+      },
+      "timestamp": 1715762597000
+    },
+    {
+      "sensorId": 5,
+      "sensorType": "LITTER_MOISTURE",
+      "location": {
+        "longitude": 20.142385645406604,
+        "latitude": 49.50957947425961
+      },
+      "timestamp": 1715762597000
+    },
+    {
+      "sensorId": 6,
+      "sensorType": "WIND_DIRECTION",
+      "location": {
+        "longitude": 20.142385645406604,
+        "latitude": 49.50957947425961
+      },
+      "timestamp": 1715762597000
     }
   ],
   "cameras": [

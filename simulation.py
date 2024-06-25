@@ -209,17 +209,15 @@ def main():
                 map.sectors[current_sector.row][current_sector.column].update_sensors()
 
                 print(current_sector.row, current_sector.column, map.sectors[current_sector.row][current_sector.column].sensors)
+                # time.sleep(1)
                 if len(map.sectors[current_sector.row][current_sector.column].sensors) > 0:
-                    print(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType'])
-                    print(switcher.get(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType']))
-                    
+                    print("Sensor Type: " + map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType'])
+                    print("Queue name: " + switcher.get(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType']))
                     for sensor in map.sectors[current_sector.row][current_sector.column].sensors:
-                        print(sensor, "sensor")
+                        time.sleep(1)
                         print(json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
-                        # TODO: WAITING FOR RABBITMQ SERVER
-                        # message_producer(EXCHANGE_NAME, channel, switcher.get(sensor['sensorType']),
-                                        #  example message
-                        # json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
+                        message_producer(EXCHANGE_NAME, channel, switcher.get(sensor['sensorType']),
+                                        json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
 
         time.sleep(2.0)
 

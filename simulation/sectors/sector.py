@@ -92,7 +92,16 @@ class Sector:
                 sensor['data'] = {
                     "co2Concentration": self._state.co2_concentration + random.uniform(-5.0, 5.0)
                 }
-            print(sensor)
+            elif sensor['sensorType'] == "WIND_SPEED":
+                sensor['data'] = {
+                    "windSpeed": self._state.wind_speed + random.uniform(-5.0, 5.0)
+                }
+            elif sensor['sensorType'] == "WIND_DIRECTION":
+                sensor['data'] = {
+                    # only NE, NW, SE, SW
+                    "windDirection": self._state.wind_direction
+                }
+            # print(sensor)
 
     def make_json(self, sensor_id):
         return {
