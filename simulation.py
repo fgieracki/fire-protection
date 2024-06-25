@@ -110,8 +110,8 @@ def callback(ch, method, properties, body):
 
 def main():
     
-    map = ForestMap.from_conf("simulation/configurations/mapConfigMockup.json")
-    fire_brigades = FireBrigade.from_conf("simulation/configurations/mapConfigMockup.json")
+    map = ForestMap.from_conf("simulation/configurations/confD.json")
+    fire_brigades = FireBrigade.from_conf("simulation/configurations/confD.json")
     
     EXCHANGE_NAME = "updates"
     USERNAME = "guest"

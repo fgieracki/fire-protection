@@ -74,8 +74,8 @@ class ForestMap:
         min_lon = min(location.longitude for location in values["location"])
         diff_lat = max(location.latitude for location in values["location"]) - min_lat
         diff_lon = max(location.longitude for location in values["location"]) - min_lon
-        width_sectors = diff_lat / values["rows"]
-        height_sectors = diff_lon / values["columns"]
+        width_sectors = diff_lon / values["columns"]
+        height_sectors = diff_lat / values["rows"]
 
         sensors = conf["sensors"]
         print(sensors)
