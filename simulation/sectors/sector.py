@@ -103,14 +103,14 @@ class Sector:
                 }
             # print(sensor)
 
-    def make_json(self, sensor_id):
+    def make_json(self, sensor, sensor_id):
         return {
             "sensorId": sensor_id,
-            "timestamp": self._sensors[sensor_id-1]['timestamp'],
-            "sensorType": self._sensors[sensor_id-1]['sensorType'],
+            "timestamp": sensor['timestamp'],
+            "sensorType": sensor['sensorType'],
             "location": {
-                "longitude": self._sensors[sensor_id-1]['location']['longitude'],
-                "latitude": self._sensors[sensor_id-1]['location']['latitude'],
+                "longitude": sensor['location']['longitude'],
+                "latitude": sensor['location']['latitude'],
             },
-            "data": self._sensors[sensor_id-1]['data']
+            "data": sensor['data']
         }

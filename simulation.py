@@ -215,9 +215,9 @@ def main():
                     print("Queue name: " + switcher.get(map.sectors[current_sector.row][current_sector.column].sensors[0]['sensorType']))
                     for sensor in map.sectors[current_sector.row][current_sector.column].sensors:
                         time.sleep(1)
-                        print(json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
+                        print(json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor, sensor['sensorId'])))
                         message_producer(EXCHANGE_NAME, channel, switcher.get(sensor['sensorType']),
-                                        json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor['sensorId'])))
+                                        json.dumps(map.sectors[current_sector.row][current_sector.column].make_json(sensor, sensor['sensorId'])))
 
         time.sleep(2.0)
 
