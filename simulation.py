@@ -117,11 +117,11 @@ def main():
     USERNAME = "guest"
     PASSWORD = "guest"
     # WAITING FOR RABBITMQ SERVER
-    connection, channel = connection_prodcuer(EXCHANGE_NAME, USERNAME, PASSWORD)
-    if connection is None or channel is None:
-        print("Connection failed")
-        return
-    print("Connection established")
+    # connection, channel = connection_prodcuer(EXCHANGE_NAME, USERNAME, PASSWORD)
+    # if connection is None or channel is None:
+    #     print("Connection failed")
+    #     return
+    # print("Connection established")
     # connection, channel = connection_consumer(exchange_name, username, password)
 
     fire_situations = 0
